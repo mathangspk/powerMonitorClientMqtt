@@ -32,7 +32,6 @@ const DeviceOnline = (props) => {
   };
 
   useEffect(() => {
-    document.title = `You clicked ${payload} times`;
     if (client) {
       //console.log(client)
       client.on('connect', () => {
