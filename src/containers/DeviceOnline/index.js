@@ -95,14 +95,12 @@ const DeviceOnline = (props) => {
 
   const styles = useStyles({
     container: {
-      marginTop: 50,
-      height: '500px',
+      marginTop: 70,
+      height: '100vh',
       width: '100%',
       color: 'white',
       fontSize: 20,
       backgroundColor: 'black',
-      maxWidth: '300px',
-      marginLeft: '15%'
     },
     title: {
       fontSize: 18,
