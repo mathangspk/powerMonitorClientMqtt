@@ -18,12 +18,12 @@ const DeviceOnline = (props) => {
   const [redirect, setRedirect] = useState(false);
   const [urlRedirect, setUrlRedirect] = useState('');
 
-
+  var genRandomString = "MQTT-" + genRandom(5);
   const mqttConnect = (host, mqttOption) => {
     setConnectStatus('Connecting');
     var host = 'ws://128.199.82.173';
     var mqttOption = {
-      clientId: 'MyMQTTjj',
+      clientId: genRandomString,
       port: 9001,
       //username: 'mqtt_user',
       //password: 'mqtt_password',	
@@ -77,16 +77,32 @@ const DeviceOnline = (props) => {
       });
     }
   }
+  function genRandom (numBytes)  {
+    let i = 0;
+    let letters = ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"];
+    let randString = "";
+    for (i = 0; i < numBytes; i++) {
+      randString = randString + random_item(letters);
+    }
+    return randString;
+  }
+  function random_item(items) {
+  
+    return items[Math.floor(Math.random() * items.length)];
+  
+  }
 
 
   const styles = useStyles({
     container: {
-      marginTop: 100,
-      height: '100vh',
+      marginTop: 50,
+      height: '500px',
       width: '100%',
       color: 'white',
       fontSize: 20,
-      backgroundColor: 'black'
+      backgroundColor: 'black',
+      maxWidth: '300px',
+      marginLeft: '15%'
     },
     title: {
       fontSize: 18,
