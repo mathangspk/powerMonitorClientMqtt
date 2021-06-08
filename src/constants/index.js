@@ -18,7 +18,7 @@ import FaceIcon from '@material-ui/icons/Face';
 import DescriptionIcon from '@material-ui/icons/Description';
 //export const API_ENDPOINT = 'https://api.yensaochampa.icu';
 export const API_ENDPOINT = 'http://localhost:4002';
-//export const API_ENDPOINT = 'http://128.199.82.173:4001';
+//export const API_ENDPOINT = 'http://128.199.82.173:4002';
 
 export const STATUSES = [
   {

@@ -62,6 +62,9 @@ class DeviceDetail extends Component {
     // Typical usage (don't forget to compare props):
     if (device !== prevProps.device) {
 //      console.log(device)
+      this.setState({
+        topic: device.sn
+      })
       params = {
         ...params,
         topic: device.sn,
@@ -138,13 +141,14 @@ class DeviceDetail extends Component {
   }
   handleChangePage = (page, total) => {
     const { mqttActionCreator } = this.props;
-    const { pagination, dataSearch } = this.state;
+    const { pagination, dataSearch, topic } = this.state;
     const { searchMqtt } = mqttActionCreator;
     pagination.page = page;
     this.setState({ pagination })
     let params = JSON.parse(JSON.stringify(dataSearch))
     params = {
       ...params,
+      topic,
       skip: (pagination.page - 1) * pagination.rowPerPage,
       limit: pagination.rowPerPage
     }
