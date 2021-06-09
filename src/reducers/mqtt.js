@@ -12,15 +12,18 @@ var myReducer = (state = initialState, action) => {
         case types.GET_ALL_MQTT_SUCCESS:
             return {
                 ...state,
-                mqtts: (action.payload.Status.StatusCode === 200) && action.payload.Data.Row || [],
-                total: (action.payload.Status.StatusCode === 200) && action.payload.Data.Total || 0,
+                mqtts: action.payload.Status.StatusCode === 200 && action.payload.Data.Row || [],
+                total: action.payload.Status.StatusCode === 200 && action.payload.Data.Total || 0,
+                analysicPower: action.payload.Status.StatusCode === 200 && action.payload.Data.analysicPower || [],
                 loading: false
             }
         case types.SEARCH_MQTT_SUCCESS:
             return {
+
                 ...state,
                 mqtts: action.payload.data.Status.StatusCode === 200 && action.payload.data.Data.Row || [],
                 total: action.payload.data.Status.StatusCode === 200 && action.payload.data.Data.Total || 0,
+                analysicPower: action.payload.data.Status.StatusCode === 200 && action.payload.data.Data.analysic || [],
                 params: action.payload.params.params || {},
                 loading: false
             }
@@ -35,7 +38,7 @@ var myReducer = (state = initialState, action) => {
                 ...state,
             }
         case types.ADD_MQTT_SUCCESS: {
-            const  data  = action.payload;
+            const data = action.payload;
             toastSuccess('Thêm mới Work Mqtt thành công!')
             return {
                 ...state,
@@ -67,14 +70,14 @@ var myReducer = (state = initialState, action) => {
             };
         }
         case types.UPDATE_MQTT_NOTE: {
-            const  mqttEditting  = action.payload;
+            const mqttEditting = action.payload;
             return {
                 ...state,
                 mqtt: mqttEditting
             };
         }
         case types.UPDATE_MQTT_SUCCESS: {
-            const  mqttEditting  = action.payload;
+            const mqttEditting = action.payload;
             const { mqtts } = state;
             const index = mqtts.findIndex((item) => item._id === mqttEditting._id);
             if (index !== -1) {

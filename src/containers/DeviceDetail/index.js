@@ -6,7 +6,7 @@ import * as modalActions from '../../actions/modal';
 import { bindActionCreators, compose } from 'redux';
 import styles from './style';
 import MqttForm from '../DeviceForm';
-import { Grid, withStyles, Fab, TextField } from '@material-ui/core';
+import { Grid, withStyles, Fab, TextField, Button, } from '@material-ui/core';
 import { Edit, Visibility } from '@material-ui/icons';
 import { Redirect } from "react-router-dom";
 import DataTable from 'react-data-table-component';
@@ -23,6 +23,7 @@ class DeviceDetail extends Component {
         rowPerPage: 20,
         rowPerPageOption: [10, 20, 50, 100, 200, 500, 1000, 10000]
       },
+
       redirect: false,
       idRedirect: '',
       dataSearch: {
@@ -31,13 +32,13 @@ class DeviceDetail extends Component {
         //{ selector: 'topic', name: 'Topic', width: '200px', sortable: true, center: true },
         { selector: 'date', name: 'Time', width: '200px', sortable: true, cell: (params) => moment(params.date).format('DD/MM/YYYY HH:mm:ss') },
         { selector: 'topic', name: 'Serial Number', width: '200px', sortable: true, center: true },
-        { selector: 'volt', name: 'Volt', width: '120px', sortable: true, center: true,},
+        { selector: 'volt', name: 'Volt', width: '120px', sortable: true, center: true, },
         { selector: 'power', name: 'Power', width: '120px', sortable: true, center: true },
         { selector: 'current', name: 'Current', width: '120px', sortable: true, center: true },
         { selector: 'energy', name: 'Total', width: '120px', sortable: true },
         { selector: 'frequency', name: 'Frequency', width: '120px', sortable: true },
         { selector: 'powerfactor', name: 'PF', width: '120px', sortable: true },
-        
+
       ]
     }
   }
@@ -51,27 +52,35 @@ class DeviceDetail extends Component {
     const { deviceActionCreator, mqttActionCreator, match: { params }, device } = this.props;
     const { getIdDevice } = deviceActionCreator;
     getIdDevice(params.deviceId);
-  
+
   }
 
   componentDidUpdate(prevProps) {
-    const {device, mqttActionCreator} = this.props;
+    const { device, mqttActionCreator, analysic } = this.props;
     const { pagination, dataSearch } = this.state;
     const { searchMqtt } = mqttActionCreator;
     let params = JSON.parse(JSON.stringify(dataSearch));
     // Typical usage (don't forget to compare props):
     if (device !== prevProps.device) {
-//      console.log(device)
+      //      console.log(device)
       this.setState({
         topic: device.sn
       })
       params = {
         ...params,
         topic: device.sn,
+        from: new Date(),
+        to: new Date(),
         skip: (pagination.page - 1) * pagination.rowPerPage,
         limit: pagination.rowPerPage
       }
       searchMqtt(params);
+    }
+    if (analysic !== prevProps.analysic) {
+      this.setState({
+        maxVolt: analysic
+      })
+
     }
   }
 
@@ -128,15 +137,30 @@ class DeviceDetail extends Component {
   }
   handleSearch = (event) => {
     const { mqttActionCreator } = this.props;
-    const { pagination, dataSearch } = this.state;
+    const { pagination, dataSearch, topic } = this.state;
     const { searchMqtt } = mqttActionCreator;
     let search = {
       ...dataSearch,
+      topic,
       skip: 0,
-      limit: pagination.rowPerPage,
+      //limit: pagination.rowPerPage,
       [event.target.name]: event.target.value
     }
+    console.log(dataSearch)
     this.setState({ dataSearch: search });
+    //searchMqtt(search);
+  }
+  searchData = () => {
+    const { mqttActionCreator } = this.props;
+    const { pagination, dataSearch, topic } = this.state;
+    const { searchMqtt } = mqttActionCreator;
+    let search = {
+      ...dataSearch,
+      topic,
+      skip: 0,
+      //limit: pagination.rowPerPage,
+    }
+    console.log(dataSearch)
     searchMqtt(search);
   }
   handleChangePage = (page, total) => {
@@ -173,45 +197,76 @@ class DeviceDetail extends Component {
   }
 
   render() {
-    const { mqtts,mqttsTotal, classes } = this.props;
-    const { columnsGrid, pagination, dataSearch } = this.state;
+    const { mqtts, mqttsTotal, classes, analysic, } = this.props;
+    const { columnsGrid, pagination, dataSearch,maxVolt } = this.state;
+    console.log(maxVolt)
+    var analysicArray = []
+    if (analysic) {
+      console.log(analysic)
+      
+      for (let i = 0; i < analysic.length; i++) {
+        analysicArray.push(analysic[i])
+      }
+      console.log(analysicArray[0])
+    }
     return (
       <Fragment>
-        
+
         <div className={classes.content}>
-          {/* <div className="box-search">
+          <div className="box-search">
             <div className="lb-search">Search</div>
             <div className="field-search">
               <TextField
                 fullWidth
-                id="search_MQTT"
-                name="mqtt"
-                label="Biên bản ĐGKT"
+                id="search_time_from"
+                name="from"
+                label="From"
                 variant="filled"
+                type="datetime-local"
                 onInput={this.handleSearch}
               />
             </div>
             <div className="field-search">
               <TextField
                 fullWidth
-                id="search_WO"
-                name="wo"
-                label="Work Order"
+                id="search_time_to"
+                name="to"
+                label="To"
                 variant="filled"
+                type="datetime-local"
                 onInput={this.handleSearch}
               />
             </div>
             <div className="field-search">
               <TextField
                 fullWidth
-                id="search_content"
-                name="content"
-                label="Nội dung công tác"
+                id="duration"
+                name="duration"
+                label="Duration"
                 variant="filled"
+                type="text"
                 onInput={this.handleSearch}
               />
             </div>
-          </div> */}
+            <div className="field-search">
+              <Button onClick={() => this.searchData()}>Tìm</Button>
+            </div>
+          </div>
+          <div className="box-search">
+            <div className="lb-search">Tracking Power:</div>
+            <div>
+              {/* Max Voltage: {analysic[0].maxVolt} */}
+            </div>
+            <div className="field-search">
+
+            </div>
+            <div className="field-search">
+
+            </div>
+            <div className="field-search">
+
+            </div>
+          </div>
           <Grid className={classes.dataTable}>
             <DataTable
               noHeader={true}
@@ -221,18 +276,18 @@ class DeviceDetail extends Component {
               striped={true}
               pagination
               paginationServer
-              paginationDefaultPage={pagination.page}
-              paginationPerPage={pagination.rowPerPage}
-              paginationRowsPerPageOptions={pagination.rowPerPageOption}
-              paginationTotalRows={mqttsTotal}
+              //paginationDefaultPage={pagination.page}
+              //paginationPerPage={pagination.rowPerPage}
+              //paginationRowsPerPageOptions={pagination.rowPerPageOption}
+              //paginationTotalRows={mqttsTotal}
               onChangePage={this.handleChangePage}
               onChangeRowsPerPage={this.handleChangeRowsPerPage}
             />
           </Grid>
           {this.renderRedirect()}
         </div>
-        <BarChart data={this.genData(mqtts)}/>
-      </Fragment>
+        <BarChart data={this.genData(mqtts)} />
+      </Fragment >
     );
   }
   genData = (mqtts) => {
@@ -241,12 +296,23 @@ class DeviceDetail extends Component {
     if (!user) return [];
     return mqtts.filter(mqtt => mqtt.topic)
   }
+  genAnalysic = (analysic) => {
+    let { user } = this.props;
+    if (!user) return [];
+    return analysic.filter(ana => ana._id)
+  }
+
+
+
+
+
 }
 const mapStateToProps = (state, ownProps) => {
   return {
     mqtts: state.mqtts.mqtts,
     device: state.devices.device,
     mqttsTotal: state.mqtts.total,
+    analysic: state.mqtts.analysicPower,
     user: state.auth.user,
 
   }

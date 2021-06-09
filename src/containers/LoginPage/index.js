@@ -96,9 +96,9 @@ class LoginPage extends Component {
                     justify="center"
                     alignItems="center"
                   >
-                    <div>
+                    {/* <div>
                       <Link to="/signup">Đăng ký tài khoản mới</Link>
-                    </div>
+                    </div> */}
                   </Grid>
                   <Grid
                     container item xs={12}
