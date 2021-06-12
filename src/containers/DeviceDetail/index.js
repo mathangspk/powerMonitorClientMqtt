@@ -28,9 +28,10 @@ class DeviceDetail extends Component {
       idRedirect: '',
       dataSearch: {
       },
+      analysic: {},
       columnsGrid: [
         //{ selector: 'topic', name: 'Topic', width: '200px', sortable: true, center: true },
-        { selector: 'date', name: 'Time', width: '200px', sortable: true, cell: (params) => moment(params.date).format('DD/MM/YYYY HH:mm:ss') },
+        { selector: '_id', name: 'Time', width: '200px', sortable: true, cell: (params) => moment(params._id).format('DD/MM/YYYY HH:mm:ss') },
         { selector: 'topic', name: 'Serial Number', width: '200px', sortable: true, center: true },
         { selector: 'volt', name: 'Volt', width: '120px', sortable: true, center: true, },
         { selector: 'power', name: 'Power', width: '120px', sortable: true, center: true },
@@ -78,7 +79,7 @@ class DeviceDetail extends Component {
     }
     if (analysic !== prevProps.analysic) {
       this.setState({
-        maxVolt: analysic
+        analysic
       })
 
     }
@@ -197,13 +198,13 @@ class DeviceDetail extends Component {
   }
 
   render() {
-    const { mqtts, mqttsTotal, classes, analysic, } = this.props;
-    const { columnsGrid, pagination, dataSearch,maxVolt } = this.state;
-    console.log(maxVolt)
+    const { mqtts, mqttsTotal, classes } = this.props;
+    const { columnsGrid, pagination, dataSearch, analysic } = this.state;
+    console.log(analysic)
     var analysicArray = []
     if (analysic) {
       console.log(analysic)
-      
+
       for (let i = 0; i < analysic.length; i++) {
         analysicArray.push(analysic[i])
       }
@@ -254,17 +255,27 @@ class DeviceDetail extends Component {
           </div>
           <div className="box-search">
             <div className="lb-search">Tracking Power:</div>
-            <div>
-              {/* Max Voltage: {analysic[0].maxVolt} */}
+            <div className="field-show">
+              Max Voltage: {analysic.maxVolt} V
             </div>
-            <div className="field-search">
-
+            <div className="field-show">
+              Min Voltage: {analysic.minVolt} V
             </div>
-            <div className="field-search">
-
+            <div className="field-show">
+              Max Current: {analysic.maxCurrent} A
             </div>
-            <div className="field-search">
-
+            <div className="field-show">
+              Min Current: {analysic.minCurrent} A
+            </div>
+            <div className="field-show">
+              Max Power: {analysic.maxPower} Kwh
+            </div>
+            
+            <div className="field-show">
+              Min Power: {analysic.minPower} Kwh
+            </div>
+            <div className="field-show">
+              Total Energy: {analysic.totalEnergy} kw
             </div>
           </div>
           <Grid className={classes.dataTable}>
@@ -292,19 +303,10 @@ class DeviceDetail extends Component {
   }
   genData = (mqtts) => {
     let { user } = this.props;
-    //console.log(mqtts)
+    console.log(mqtts)
     if (!user) return [];
-    return mqtts.filter(mqtt => mqtt.topic)
+    return mqtts.filter(mqtt => mqtt._id)
   }
-  genAnalysic = (analysic) => {
-    let { user } = this.props;
-    if (!user) return [];
-    return analysic.filter(ana => ana._id)
-  }
-
-
-
-
 
 }
 const mapStateToProps = (state, ownProps) => {
