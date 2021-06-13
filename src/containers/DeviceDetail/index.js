@@ -200,17 +200,9 @@ class DeviceDetail extends Component {
   render() {
     const { mqtts, mqttsTotal, classes } = this.props;
     const { columnsGrid, pagination, dataSearch, analysic } = this.state;
-    console.log(analysic)
-    var analysicArray = []
-    if (analysic) {
-      console.log(analysic)
-
-      for (let i = 0; i < analysic.length; i++) {
-        analysicArray.push(analysic[i])
-      }
-      console.log(analysicArray[0])
-    }
+    this.calPercentPowerGreater(mqtts)
     return (
+
       <Fragment>
 
         <div className={classes.content}>
@@ -243,7 +235,7 @@ class DeviceDetail extends Component {
                 fullWidth
                 id="duration"
                 name="duration"
-                label="Duration"
+                label="Duration (minute)"
                 variant="filled"
                 type="text"
                 onInput={this.handleSearch}
@@ -270,7 +262,7 @@ class DeviceDetail extends Component {
             <div className="field-show">
               Max Power: {analysic.maxPower} Kwh
             </div>
-            
+
             <div className="field-show">
               Min Power: {analysic.minPower} Kwh
             </div>
@@ -306,6 +298,10 @@ class DeviceDetail extends Component {
     console.log(mqtts)
     if (!user) return [];
     return mqtts.filter(mqtt => mqtt._id)
+  }
+  calPercentPowerGreater = (mqtts) => {
+    console.log(mqtts.length)
+
   }
 
 }
