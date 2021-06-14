@@ -13,6 +13,7 @@ import DataTable from 'react-data-table-component';
 import { popupConfirm } from '../../actions/ui';
 import CloudDoneIcon from '@material-ui/icons/CloudDone';
 import { green } from '@material-ui/core/colors';
+import OfflineBoltIcon from '@material-ui/icons/OfflineBolt';
 class Devices extends Component {
   constructor(props) {
     super(props)
@@ -24,7 +25,9 @@ class Devices extends Component {
       },
       redirect: false,
       online: false,
+      energy: false,
       idRedirect: '',
+      idEnergy: '',
       idOnline: '',
       dataSearch: {
         email: ''
@@ -45,6 +48,17 @@ class Devices extends Component {
               <Fab
                 color="default"
                 aria-label="Xem Chi Tiết"
+                size='small'
+                onClick={() => {
+                  this.onClickEnergy(data._id)
+                }}
+              >
+                <OfflineBoltIcon color="primary" />
+              </Fab>
+              &nbsp;&nbsp;
+              <Fab
+                color="default"
+                aria-label="Energy Detail"
                 size='small'
                 onClick={() => {
                   this.onClickView(data._id)
@@ -103,21 +117,19 @@ class Devices extends Component {
   }
   renderRedirect = () => {
     if (this.state.redirect && this.state.idRedirect) {
-      let tool = '/admin/device-detail/' + this.state.idRedirect;
-      return <Redirect to={tool} />
+      let link = '/admin/device-detail/' + this.state.idRedirect;
+      return <Redirect to={link} />
     }
     if (this.state.online && this.state.idOnline) {
-      let tool = '/admin/online-device/' + this.state.idOnline;
-      return <Redirect to={tool} />
+      let link = '/admin/online-device/' + this.state.idOnline;
+      return <Redirect to={link} />
+    }
+    if (this.state.energy && this.state.idEnergy) {
+      let link = '/admin/energy-detail/' 
+      + this.state.idEnergy;
+      return <Redirect to={link} />
     }
   }
-  renderOnline = () => {
-    if (this.state.online && this.state.idOnline) {
-      let tool = '/admin/online-device/' + this.state.idOnline;
-      return <Redirect to={tool} />
-    }
-  }
-
   componentDidMount() {
     const { deviceActionCreator } = this.props;
     const { pagination, dataSearch } = this.state;
@@ -152,6 +164,12 @@ class Devices extends Component {
     this.setState({
       redirect: true,
       idRedirect
+    })
+  };
+  onClickEnergy = (idEnergy) => {
+    this.setState({
+      energy: true,
+      idEnergy
     })
   };
   onClickOnline = (idOnline) => {
@@ -260,7 +278,6 @@ class Devices extends Component {
             />
           </Grid>
           {this.renderRedirect()}
-          {/* //{this.onClickOnline()} */}
         </div>
       </Fragment>
     );

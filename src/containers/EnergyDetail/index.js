@@ -12,9 +12,9 @@ import { Redirect } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import moment from 'moment';
 import { popupConfirm } from '../../actions/ui';
-import BarChart from '../../components/BarChart';
+import BarChart2 from '../../components/BarChart2';
 
-class DeviceDetail extends Component {
+class EnergyDetail extends Component {
   constructor(props) {
     super(props)
     this.state = {
@@ -53,35 +53,40 @@ class DeviceDetail extends Component {
     const { deviceActionCreator, mqttActionCreator, match: { params }, device } = this.props;
     const { getIdDevice } = deviceActionCreator;
     getIdDevice(params.deviceId);
-
   }
 
   componentDidUpdate(prevProps) {
     const { device, mqttActionCreator, analysic } = this.props;
     const { pagination, dataSearch } = this.state;
-    const { searchMqtt } = mqttActionCreator;
+    const { searchMqtt, getPowerDaily } = mqttActionCreator;
+    const { duration } = dataSearch
     let params = JSON.parse(JSON.stringify(dataSearch));
     // Typical usage (don't forget to compare props):
     if (device !== prevProps.device) {
-      //      console.log(device)
       this.setState({
         topic: device.sn
       })
+      console.log(duration)
+      let myCurrentDate = new Date();
+      myCurrentDate.setHours(-7, 0, -1)
+      myCurrentDate.setDate(myCurrentDate.getDate() - 7);
+
+      let toDate = new Date();
+      toDate.setHours(toDate.getHours() - 7);
       params = {
         ...params,
         topic: device.sn,
-        from: new Date(),
-        to: new Date(),
+        from: myCurrentDate,
+        to: toDate,
         skip: (pagination.page - 1) * pagination.rowPerPage,
         limit: pagination.rowPerPage
       }
-      searchMqtt(params);
+      getPowerDaily(params);
     }
     if (analysic !== prevProps.analysic) {
       this.setState({
         analysic
       })
-
     }
   }
 
@@ -149,20 +154,28 @@ class DeviceDetail extends Component {
     }
     console.log(dataSearch)
     this.setState({ dataSearch: search });
-    //searchMqtt(search);
   }
   searchData = () => {
     const { mqttActionCreator } = this.props;
     const { pagination, dataSearch, topic } = this.state;
-    const { searchMqtt } = mqttActionCreator;
+    const { searchMqtt, getPowerDaily } = mqttActionCreator;
+    const { duration } = dataSearch
+    let myCurrentDate = new Date();
+    myCurrentDate.setHours(-7, 0, -1)
+    myCurrentDate.setDate(myCurrentDate.getDate() - duration);
+
+    let toDate = new Date();
+    toDate.setHours(toDate.getHours() - 7);
     let search = {
       ...dataSearch,
       topic,
+      from: myCurrentDate,
+      to: toDate,
       skip: 0,
       //limit: pagination.rowPerPage,
     }
     console.log(dataSearch)
-    searchMqtt(search);
+    getPowerDaily(search);
   }
   handleChangePage = (page, total) => {
     const { mqttActionCreator } = this.props;
@@ -235,7 +248,7 @@ class DeviceDetail extends Component {
                 fullWidth
                 id="duration"
                 name="duration"
-                label="Duration (minute)"
+                label="Duration (day)"
                 variant="filled"
                 type="text"
                 onInput={this.handleSearch}
@@ -243,31 +256,6 @@ class DeviceDetail extends Component {
             </div>
             <div className="field-search ">
               <Button className="buttonFind" onClick={() => this.searchData()}>Tìm</Button>
-            </div>
-          </div>
-          <div className="box-search">
-            <div className="lb-search">Tracking Power:</div>
-            <div className="field-show">
-              Max Voltage: {analysic.maxVolt} V
-            </div>
-            <div className="field-show">
-              Min Voltage: {analysic.minVolt} V
-            </div>
-            <div className="field-show">
-              Max Current: {analysic.maxCurrent} A
-            </div>
-            <div className="field-show">
-              Min Current: {analysic.minCurrent} A
-            </div>
-            <div className="field-show">
-              Max Power: {analysic.maxPower} Kwh
-            </div>
-
-            <div className="field-show">
-              Min Power: {analysic.minPower} Kwh
-            </div>
-            <div className="field-show">
-              Total Energy: {analysic.totalEnergy} kw
             </div>
           </div>
           {/* <Grid className={classes.dataTable}>
@@ -289,7 +277,7 @@ class DeviceDetail extends Component {
           </Grid> */}
           {this.renderRedirect()}
         </div>
-        <BarChart data={this.genData(mqtts)} />
+        <BarChart2 data={this.genData(mqtts)} />
       </Fragment >
     );
   }
@@ -297,7 +285,7 @@ class DeviceDetail extends Component {
     let { user } = this.props;
     console.log(mqtts)
     if (!user) return [];
-    return mqtts.filter(mqtt => mqtt._id)
+    return mqtts.filter(mqtt => mqtt.date)
   }
   calPercentPowerGreater = (mqtts) => {
     console.log(mqtts.length)
@@ -328,4 +316,4 @@ const withConnect = connect(mapStateToProps, mapDispatchToProps);
 export default compose(
   withStyles(styles),
   withConnect,
-)(DeviceDetail);
+)(EnergyDetail);

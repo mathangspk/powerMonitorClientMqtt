@@ -17,6 +17,12 @@ var myReducer = (state = initialState, action) => {
                 analysicPower: action.payload.Status.StatusCode === 200 && action.payload.Data.analysicPower || [],
                 loading: false
             }
+        case types.GET_POWER_DAILY_MQTT:
+            console.log('alo')
+            return {
+                ...state,
+                loading: true
+            }
         case types.SEARCH_MQTT_SUCCESS:
             return {
 

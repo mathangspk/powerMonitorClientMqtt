@@ -10,6 +10,11 @@ export const searchMqtt = (token, data) => {
         return res;
     }).catch(err => { return err.response });
 }
+export const getPowerDaily = (token, data) => {
+    return getWithToken('api/mqtts/powerdaily', token, data).then(res => {
+        return res;
+    }).catch(err => { return err.response });
+}
 export const getIdMqtt = (token, id) => {
     return getWithToken('api/mqtts/' + id, token).then(res => {
         return res;

@@ -33,37 +33,6 @@ const style = (theme) => ({
             backgroundColor: '#e7e7e7',
             paddingLeft: '12px'
           }
-        },
-        '& .MuiButton-root': {
-          background: 'green',
-        },
-        '& .buttonFind': {
-          color: 'yellow',
-        }
-      },
-      '& .field-show': {
-        width: 'calc((100% - 100px) / 7)',
-        maxWidth: '300px',
-        paddingRight: '15px',
-        '& .multiple-select': {
-          backgroundColor: '#e7e7e7',
-          '& .lb-user': {
-            top: '-5px',
-            paddingLeft: '12px',
-            '&.Mui-focused, &.MuiFormLabel-filled': {
-              top: '10px'
-            }
-          },
-          '& .lb-user + .sl-user': {
-            marginTop: '24px'
-          },
-          '& .sl-user .MuiSelect-selectMenu': {
-            paddingLeft: '12px'
-          },
-          '& .sl-user.Mui-focused .MuiSelect-selectMenu': {
-            backgroundColor: '#e7e7e7',
-            paddingLeft: '12px'
-          }
         }
       }
     }

@@ -5,6 +5,7 @@ import PageNotFound from '../containers/PageNotFound';
 
 import Devices from '../containers/Devices';
 import DeviceDetail from '../containers/DeviceDetail';
+import EnergyDetail from '../containers/EnergyDetail';
 import DeviceOnline from '../containers/DeviceOnline';
 import DeviceForm from '../containers/DeviceForm';
 
@@ -17,8 +18,8 @@ import ChromeReaderModeIcon from '@material-ui/icons/ChromeReaderMode';
 import FaceIcon from '@material-ui/icons/Face';
 import DescriptionIcon from '@material-ui/icons/Description';
 //export const API_ENDPOINT = 'https://api.yensaochampa.icu';
-export const API_ENDPOINT = 'http://localhost:4002';
-//export const API_ENDPOINT = 'http://128.199.82.173:4002';
+//export const API_ENDPOINT = 'http://localhost:4002';
+export const API_ENDPOINT = 'http://128.199.82.173:4002';
 
 export const STATUSES = [
   {
@@ -74,6 +75,17 @@ export const ADMIN_ROUTES = [
     labelButtonAdd: 'Thiết bị',
     iconSidebar : DescriptionIcon,
     isExport: true
+  },
+  {
+    path: '/admin/energy-detail',
+    params: [":deviceId"],
+    name: 'Sản lượng điện tiêu thụ',
+    exact: false,
+    component: EnergyDetail,
+    form: DeviceForm,
+    onlyAdmin: false,
+    iconSidebar : ChromeReaderModeIcon,
+    isHide: true
   },
   {
     path: '/admin/device-detail',

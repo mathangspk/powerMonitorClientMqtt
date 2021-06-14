@@ -21,7 +21,7 @@ import {
   updateMqttFail,
 } from '../actions/mqttActions';
 
-import { getAllMqtt, searchMqtt, getIdMqtt, addMqttRequest, deleteMqttRequest, patchMqttRequest } from '../apis/mqtt';
+import { getAllMqtt, searchMqtt, getIdMqtt, addMqttRequest, deleteMqttRequest, patchMqttRequest, getPowerDaily  } from '../apis/mqtt';
 import { getToken } from '../apis/auth';
 
 import * as mqttTypes from '../constants/mqtt';
@@ -55,6 +55,21 @@ function* searchMqttSaga({ payload }) {
   yield put(showLoading());
   const token = yield call(getToken);
   const resp = yield call(searchMqtt, token, payload);
+  console.log(resp)
+  const { status, data } = resp;
+  if (status === STATUS_CODE.SUCCESS) {
+    yield put(searchMqttSuccess(data, payload))
+  } else {
+    yield put(searchMqttFail(data))
+    yield put(returnErrors(data, status, 'SEARCH_MQTT_FAIL'))
+  }
+  yield put(hideLoading());
+}
+function* powerDailyMqttSaga({ payload }) {
+  console.log("powerDaily")
+  yield put(showLoading());
+  const token = yield call(getToken);
+  const resp = yield call(getPowerDaily, token, payload);
   console.log(resp)
   const { status, data } = resp;
   if (status === STATUS_CODE.SUCCESS) {
@@ -139,6 +154,7 @@ function* updateMqttSaga({ payload }) {
 function* mqttSaga() {
   yield takeLatest(mqttTypes.GET_ALL_MQTT, getAllMqttSaga);
   yield takeLatest(mqttTypes.SEARCH_MQTT, searchMqttSaga);
+  yield takeLatest(mqttTypes.GET_POWER_DAILY_MQTT , powerDailyMqttSaga);
   yield takeLatest(mqttTypes.GET_ID_MQTT, getIdMqttSaga);
   yield takeLatest(mqttTypes.ADD_MQTT, addMqttSaga);
   yield takeLatest(mqttTypes.DELETE_MQTT, deleteMqttSaga);
