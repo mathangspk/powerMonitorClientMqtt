@@ -30,6 +30,14 @@ export const searchMqtt = (params = {}) => {
     }
   }
 }
+export const searchPowerMqtt = (params = {}) => {
+  return {
+    type: mqttConstants.SEARCH_POWER_MQTT,
+    payload: {
+      params,
+    }
+  }
+}
 export const getPowerDaily = (params = {}) => {
   return {
     type: mqttConstants.GET_POWER_DAILY_MQTT,

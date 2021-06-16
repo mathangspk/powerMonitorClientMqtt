@@ -6,8 +6,8 @@ import * as modalActions from '../../actions/modal';
 import { bindActionCreators, compose } from 'redux';
 import styles from './style';
 import MqttForm from '../DeviceForm';
-import { Grid, withStyles, Fab, TextField, Button, } from '@material-ui/core';
-import { Edit, Visibility } from '@material-ui/icons';
+import { Grid, withStyles, Fab, TextField, Button, FormControl, InputLabel,Select } from '@material-ui/core';
+import { Edit, FastfoodOutlined, Visibility } from '@material-ui/icons';
 import { Redirect } from "react-router-dom";
 import DataTable from 'react-data-table-component';
 import moment from 'moment';
@@ -28,6 +28,11 @@ class DeviceDetail extends Component {
       idRedirect: '',
       dataSearch: {
       },
+      dataPowerSearch: {
+        status:"max"
+      },
+      showBarOnTime: false,
+      showBarOnDaily: false,
       analysic: {},
       columnsGrid: [
         //{ selector: 'topic', name: 'Topic', width: '200px', sortable: true, center: true },
@@ -151,6 +156,21 @@ class DeviceDetail extends Component {
     this.setState({ dataSearch: search });
     //searchMqtt(search);
   }
+  handlePowerSearch = (event) => {
+    const { mqttActionCreator } = this.props;
+    const { pagination, dataPowerSearch, topic } = this.state;
+    const { searchMqtt } = mqttActionCreator;
+    let search = {
+      ...dataPowerSearch,
+      topic,
+      skip: 0,
+      //limit: pagination.rowPerPage,
+      [event.target.name]: event.target.value
+    }
+    console.log(search)
+    this.setState({ dataPowerSearch: search });
+    //searchMqtt(search);
+  }
   searchData = () => {
     const { mqttActionCreator } = this.props;
     const { pagination, dataSearch, topic } = this.state;
@@ -161,8 +181,24 @@ class DeviceDetail extends Component {
       skip: 0,
       //limit: pagination.rowPerPage,
     }
+    this.setState({
+      showBarOnTime:true,
+      showBarOnDaily: false,
+    })
     console.log(dataSearch)
     searchMqtt(search);
+  }
+  searchPowerData = () => {
+    const { mqttActionCreator } = this.props;
+    const { pagination, dataPowerSearch, topic } = this.state;
+    const { searchPowerMqtt  } = mqttActionCreator;
+    let search = {
+      ...dataPowerSearch,
+      topic,
+      skip: 0,
+      //limit: pagination.rowPerPage,
+    }
+    searchPowerMqtt(search);
   }
   handleChangePage = (page, total) => {
     const { mqttActionCreator } = this.props;
@@ -199,7 +235,7 @@ class DeviceDetail extends Component {
 
   render() {
     const { mqtts, mqttsTotal, classes } = this.props;
-    const { columnsGrid, pagination, dataSearch, analysic } = this.state;
+    const { columnsGrid, pagination, dataSearch, analysic, dataPowerSearch, showBarOnDaily, showBarOnTime } = this.state;
     this.calPercentPowerGreater(mqtts)
     return (
 
@@ -246,6 +282,85 @@ class DeviceDetail extends Component {
             </div>
           </div>
           <div className="box-search">
+            <div className="lb-search">Search</div>
+            <div className="field-search">
+              <TextField
+                fullWidth
+                id="search_date_from"
+                name="search_date_from"
+                label="From"
+                variant="filled"
+                type="date"
+                onInput={this.handlePowerSearch}
+              />
+            </div>
+            <div className="field-search">
+              <TextField
+                fullWidth
+                id="search_date_to"
+                name="search_date_to"
+                label="To"
+                variant="filled"
+                type="date"
+                onInput={this.handlePowerSearch}
+              />
+            </div>
+            <div className="field-search">
+              <TextField
+                fullWidth
+                id="search_time_from"
+                name="search_time_from"
+                label="From"
+                variant="filled"
+                type="time"
+                onInput={this.handlePowerSearch}
+              />
+            </div>
+            <div className="field-search">
+              <TextField
+                fullWidth
+                id="search_time_to"
+                name="search_time_to"
+                label="To"
+                variant="filled"
+                type="time"
+                onInput={this.handlePowerSearch}
+              />
+            </div>
+            <div className="field-search">
+              <TextField
+                fullWidth
+                id="duration"
+                name="duration"
+                label="Duration (minute)"
+                variant="filled"
+                type="text"
+                onInput={this.handlePowerSearch}
+              />
+            </div>
+            <div className="field-search">
+              <FormControl fullWidth variant="filled">
+                <InputLabel htmlFor="status">Power</InputLabel>
+                <Select
+                  fullWidth
+                  native
+                  value={dataPowerSearch.status}
+                  onChange={this.handlePowerSearch}
+                  inputProps={{
+                    name: 'status',
+                    id: 'status',
+                  }}
+                >
+                  <option value="min">MIN</option>
+                  <option value="max">MAX</option>
+                </Select>
+              </FormControl>
+            </div>
+            <div className="field-search ">
+              <Button className="buttonFind" onClick={() => this.searchPowerData()}>Tìm</Button>
+            </div>
+          </div>
+          <div className="box-search">
             <div className="lb-search">Tracking Power:</div>
             <div className="field-show">
               Max Voltage: {analysic.maxVolt} V
@@ -289,7 +404,7 @@ class DeviceDetail extends Component {
           </Grid> */}
           {this.renderRedirect()}
         </div>
-        <BarChart data={this.genData(mqtts)} />
+        {showBarOnTime ? <BarChart data={this.genData(mqtts)} /> : <></>}
       </Fragment >
     );
   }
